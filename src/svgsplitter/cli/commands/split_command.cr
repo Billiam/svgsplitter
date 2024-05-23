@@ -17,7 +17,7 @@ class Svgsplitter::CLI::Commands::SplitCommand < ACON::Command
     prefix = input.option "prefix"
     dry_run = input.option "dry-run", Bool
 
-    splitter = Splitter.new(svg_path, output_path: output_dir)
+    splitter = Splitter.new(svg_path, output_path: output_dir, prefix: prefix)
     splitter.run(dry_run)
 
     Status::SUCCESS

@@ -35,7 +35,7 @@ module Svgsplitter
       result =  main_element.children.select(&.element?).each do |child|
         new_document = build_file(xml, child["id"])
         if new_document
-          filename = child["id"].gsub(/[\/\\]/, "_") + ".svg"
+          filename = "#{@prefix}#{child["id"]}.svg".gsub(/[\/\\]/, "_")
           output_path = output_directory.join(filename)
           puts "Writing #{child["id"]} to #{output_path}"
           write_file(new_document, output_path) unless dry_run
