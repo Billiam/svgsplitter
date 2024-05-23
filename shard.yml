@@ -1,0 +1,18 @@
+name: svgsplitter
+version: 0.1.1
+
+authors:
+  - Billiam <billiamthesecond@gmail.com>
+
+targets:
+  svgsplitter:
+    main: src/svgsplitter.cr
+
+dependencies:
+  athena-console:
+    github: athena-framework/console
+    version: ~> 0.3.5
+
+crystal: '>= 1.12.1'
+
+license: MIT
