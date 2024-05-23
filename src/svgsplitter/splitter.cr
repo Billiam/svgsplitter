@@ -2,7 +2,10 @@ require "xml"
 
 module Svgsplitter
   class Splitter
-    def initialize(input_path : String, output_path : String | Nil = nil, prefix : String | Nil = "")
+    @output : ACON::Output::Interface
+
+    def initialize(input_path : String, output, output_path : String | Nil = nil, prefix : String | Nil = "")
+      @output = output
       @input_path = input_path
       @output_path = output_path
       @prefix = prefix
@@ -37,7 +40,7 @@ module Svgsplitter
         if new_document
           filename = "#{@prefix}#{child["id"]}.svg".gsub(/[\/\\]/, "_")
           output_path = output_directory.join(filename)
-          puts "Writing #{child["id"]} to #{output_path}"
+          @output.puts "Writing <info>#{child["id"]}</info> to <info>#{output_path}</info>"
           write_file(new_document, output_path) unless dry_run
         end
       end
