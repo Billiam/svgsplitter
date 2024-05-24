@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  release:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+          - os: windows-latest
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    permissions:
+      contents: write
+    steps:
+      - name: Download source
+        uses: actions/checkout@v4
+      - name: Install Crystal
+        uses: crystal-lang/install-crystal@v1
+      - name: Cache shards
+        uses: actions/cache@v4
+        with:
+          path: lib
+          key: ${{ runner.os }}-shards-${{ hashFiles('**/shard.lock') }}
+      - name: Install shards
+        run: shards check || shards install
+      - name: Build Mac
+        run: shards build --production --release --no-debug
+        if: matrix.os == 'macos-latest'
+      - name: Rename Mac
+        run: mv bin/svgsplitter bin/svgsplitter.darwin
+        if: matrix.os == 'macos-latest'
+      - name: Build Windows
+        run: shards build --production --static --release --no-debug
+        if: matrix.os == 'windows-latest'
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            bin/*
+

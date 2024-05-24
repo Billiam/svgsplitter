@@ -1,0 +1,29 @@
+name: Release linux
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - '*'
+jobs:
+  release_linux:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build docker images
+        run: docker build . -t local
+      - name: Build
+        run: docker run --rm -v $PWD:/app -w /app local shards build --production --static --release --no-debug
+      - name: View
+        run: ls bin
+      - name: Chown
+        run: sudo chown -R $(whoami) bin
+      - name: Rename
+        run: mv bin/svgsplitter bin/svgsplitter.linux
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            bin/*
